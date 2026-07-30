@@ -1,0 +1,58 @@
+@page "/blog/{Title}"
+@using System.Runtime.InteropServices
+@using KittenRs.Client.Data
+@using Markdig
+
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@rendermode InteractiveWebAssembly
+
+@attribute [StreamRendering]
+
+<h1>@Title</h1>
+
+@if (Blog != null)
+{
+    @if (Blog.Collection != null)
+    {
+        <small>Collection: <a href="/blog?group=@Blog.Collection">@Blog.Collection</a></small>
+    }
+
+    @if (Blog.HiatusSince > 0)
+    {
+        <small class="hiatus">Note: This project has been on hiatus since: <span id="date"> @(DateTimeOffset.FromUnixTimeMilliseconds(Blog.HiatusSince).ToString())</span></small>
+    }
+    <div class="blog">
+        @((MarkupString)Result)
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public required string Title { get; set; }
+    
+    public BlogDto? Blog { get; set; }
+
+    private string? _markdown = null;
+
+    private string Result = ""; 
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var isPrerendering = RuntimeInformation.ProcessArchitecture != Architecture.Wasm;
+        if (isPrerendering) return;
+        _markdown = await HttpClient.GetStringAsync($"api/Blogs/{Title}/content");
+        Blog = await HttpClient.GetFromJsonAsync<BlogDto>($"api/Blogs/{Title}");
+        
+        if (_markdown == null || Blog == null)
+        {
+            NavigationManager.NavigateTo("/NotFound", true);
+            return;
+        }
+        
+        Result = Markdown.ToHtml(_markdown);
+        StateHasChanged();
+    }
+
+}

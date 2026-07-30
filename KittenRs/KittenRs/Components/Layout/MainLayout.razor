@@ -1,9 +1,27 @@
-﻿@inherits LayoutComponentBase
+﻿@using KittenRs.Client.Components
+@inherits LayoutComponentBase
+@inject IJSRuntime JsRuntime
 
-@Body
+<Navbar/>
+
+<div class="guttering">
+    <div class="page">
+        @Body
+    </div>
+</div>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+<Footer/>
+
+<script type="text/javascript" src="js/navbar.js"></script>
+<script type="text/javascript" src="js/theme.js"></script>
+
+@code
+{
+
+}

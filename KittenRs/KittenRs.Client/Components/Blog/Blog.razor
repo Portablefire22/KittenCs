@@ -1,0 +1,32 @@
+@inject HttpClient HttpClient
+
+@rendermode InteractiveWebAssembly
+@attribute [StreamRendering]
+
+@page "/Blog"
+@using System.Runtime.InteropServices
+@using KittenRs.Client.Data
+
+<h1 class="centre-text">All Blog Posts</h1>
+<div class="all-posts">
+    @if (Posts != null)
+    {
+        @foreach (var post in Posts)
+        {
+            <BlogCard Blog="post"/>
+        }
+    }
+</div>
+
+@code {
+
+    public BlogDto[]? Posts { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isPrerendering = RuntimeInformation.ProcessArchitecture != Architecture.Wasm;
+        if (isPrerendering) return;
+        Posts = await HttpClient.GetFromJsonAsync<BlogDto[]>("api/Blogs"); 
+        StateHasChanged();
+    }
+}

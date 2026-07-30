@@ -1,0 +1,28 @@
+
+@inject IJSRuntime JsRuntime
+@rendermode InteractiveWebAssembly
+
+<div class="navbar">
+    <div id="navbar" class="navbar-contents">
+        <a class="navbar-brand" href="/">Kitten.rs</a>
+  
+        <a class="navbar-arrow" onclick="navbarRight()"><i class="fa-solid fa-arrow-right"></i></a>
+        <a class="navbar-item" href="/contact">Contact</a>
+        <a class="navbar-item" href="/about">About</a>
+        <a class="navbar-item" href="/blog">Blog</a>
+        <a class="navbar-item" href="/projects" id="navbar-active">Projects</a>        
+        <a class="navbar-arrow" onclick="navbarLeft()"><i class="fa-solid fa-arrow-left"></i></a>
+    </div>
+    <hr/>
+</div>
+
+@code {
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        await JsRuntime.InvokeVoidAsync("loadNavbar", "navbar.js");
+    }
+
+}

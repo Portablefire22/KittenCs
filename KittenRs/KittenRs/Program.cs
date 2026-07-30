@@ -1,4 +1,7 @@
 using KittenRs.Components;
+using KittenRs.Data;
+using KittenRs.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace KittenRs;
 
@@ -11,7 +14,26 @@ public class Program
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveWebAssemblyComponents();
+        
+        builder.Services.AddScoped(sp => new HttpClient());
 
+        builder.Services.AddControllers();
+
+        builder.Services.AddScoped<PostService>();
+        
+        
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
+                               throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+        var serverVersion = new MariaDbServerVersion(new Version(11,4,12));
+        builder.Services.AddDbContextFactory<ApplicationDbContext>(options => 
+                options.UseMySql(connectionString,  serverVersion)
+#if DEBUG
+                    .LogTo(Console.WriteLine, LogLevel.Information)
+                    .EnableSensitiveDataLogging()
+                    .EnableDetailedErrors()
+#endif
+        );
+        
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -36,6 +58,8 @@ public class Program
             .AddInteractiveWebAssemblyRenderMode()
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
+        app.MapControllers();
+        
         app.Run();
     }
 }

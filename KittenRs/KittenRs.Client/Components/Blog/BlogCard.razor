@@ -1,0 +1,22 @@
+@using KittenRs.Client.Data
+
+<a class="clickable-card" href="/blog/@Blog.Title">
+    <div class="post-preview">
+        <div class="image">
+            <img src="@ImageUrl"/>
+        </div>
+        <div class="post-preview-info">
+            <h1>@Blog.Title</h1>
+            <p>@Blog.Description</p>
+        </div>
+    </div>
+</a>
+
+
+@code
+{
+    [Parameter]
+    public required BlogDto Blog { get; set; }
+
+    private string ImageUrl => Blog.ImageUrl ?? "/img/card_default_low.png";
+}

@@ -1,0 +1,15 @@
+:root {
+    --background-color: #343a40;
+    --foreground-color: var(--background-color);
+    /* --foreground-color: #383f47; */
+    --debug-color: hotpink;
+    --text-navbar: #F5A9B8;
+    --text-navbar-arrow: #5BCEFA;
+    --text-navbar-arrow-hover: #11b8f8;
+    --text-navbar-hover: #ed647f;
+    --horizontal-separator: #5BCEFA;
+    --text: white;
+    --text-link: #5BCEFA;
+    --text-hiatus: #FDFD96;
+    --card-background: #11b8f8;
+}
