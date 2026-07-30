@@ -1,0 +1,13 @@
+﻿services:
+  kittenrs:
+    image: kittenrs
+    build:
+      context: .
+      dockerfile: KittenRs/KittenRs/Dockerfile
+
+  kittenrs.client:
+    image: kittenrs.client
+    build:
+      context: .
+      dockerfile: KittenRs/KittenRs.Client/Dockerfile
+
