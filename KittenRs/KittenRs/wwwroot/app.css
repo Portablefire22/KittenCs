@@ -37,6 +37,9 @@ h1:focus {
     text-align: start;
 }
 
+img {
+    max-width: 100%;
+}
 
 html {
     height: 100%;

@@ -3,6 +3,7 @@
 @using System.Text.Json
 @using KittenRs.Client.Data
 @using Markdig
+@using Markdown.ColorCode
 @using Microsoft.AspNetCore.Components.Infrastructure
 
 @inject HttpClient HttpClient
@@ -14,7 +15,7 @@
 
 @if (Blog != null)
 {
-    <h1>@Title</h1>
+    <h1>@Blog.Title</h1>
     @if (Blog.Collection != null)
     {
         <small>Collection: <a href="/blog?group=@Blog.Collection">@Blog.Collection</a></small>
@@ -55,8 +56,12 @@ else
             NavigationManager.NavigateTo("/NotFound", true);
             return;
         }
-        
-        Blog = await JsonSerializer.DeserializeAsync<BlogDto>(await resp.Content.ReadAsStreamAsync());
+
+        var options = new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy =  JsonNamingPolicy.CamelCase,
+        };
+        Blog = await JsonSerializer.DeserializeAsync<BlogDto>(await resp.Content.ReadAsStreamAsync(),  options);
         if (Blog != null)
         {
             _markdown = await HttpClient.GetStringAsync($"api/Blogs/{Title}/content");
@@ -68,7 +73,7 @@ else
             return;
         }
 
-        var mark = new MarkdownPipelineBuilder().UsePipeTables().Build();
+        var mark = new MarkdownPipelineBuilder().UsePipeTables().UseAdvancedExtensions().UseColorCode().Build();
         Result = Markdown.ToHtml(_markdown, mark);
         StateHasChanged();
     }
