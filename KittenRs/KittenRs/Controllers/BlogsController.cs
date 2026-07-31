@@ -29,15 +29,17 @@ namespace KittenRs
         }
 
         [HttpGet("{title}/content")]
-        public async Task<string?> GetContent(string title)
+        public async Task<ActionResult<string>> GetContent(string title)
         {
-            return await _postService.GetPostContent(title);
+            var posts = await _postService.GetPostContent(title);
+            return posts == null? NotFound() :  Ok(posts);
         }
         
         [HttpGet("{title}")]
-        public async Task<BlogDto?> Get(string title)
+        public async Task<ActionResult<BlogDto>> Get(string title)
         {
-            return await _postService.GetPost(title);
+            var posts = await _postService.GetPost(title);
+            return posts == null? NotFound() :  Ok(posts);
         }
 
 

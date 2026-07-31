@@ -1,7 +1,9 @@
 @page "/blog/{Title}"
 @using System.Runtime.InteropServices
+@using System.Text.Json
 @using KittenRs.Client.Data
 @using Markdig
+@using Microsoft.AspNetCore.Components.Infrastructure
 
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
@@ -9,10 +11,10 @@
 
 @attribute [StreamRendering]
 
-<h1>@Title</h1>
 
 @if (Blog != null)
 {
+    <h1>@Title</h1>
     @if (Blog.Collection != null)
     {
         <small>Collection: <a href="/blog?group=@Blog.Collection">@Blog.Collection</a></small>
@@ -25,6 +27,10 @@
     <div class="blog">
         @((MarkupString)Result)
     </div>
+}
+else
+{
+    <h1 class="centre-text centre">Loading...</h1>
 }
 
 @code {
@@ -42,16 +48,28 @@
     {
         var isPrerendering = RuntimeInformation.ProcessArchitecture != Architecture.Wasm;
         if (isPrerendering) return;
-        _markdown = await HttpClient.GetStringAsync($"api/Blogs/{Title}/content");
-        Blog = await HttpClient.GetFromJsonAsync<BlogDto>($"api/Blogs/{Title}");
+        var resp = await HttpClient.GetAsync($"api/Blogs/{Title}");
+
+        if (!resp.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo("/NotFound", true);
+            return;
+        }
+        
+        Blog = await JsonSerializer.DeserializeAsync<BlogDto>(await resp.Content.ReadAsStreamAsync());
+        if (Blog != null)
+        {
+            _markdown = await HttpClient.GetStringAsync($"api/Blogs/{Title}/content");
+        }
         
         if (_markdown == null || Blog == null)
         {
             NavigationManager.NavigateTo("/NotFound", true);
             return;
         }
-        
-        Result = Markdown.ToHtml(_markdown);
+
+        var mark = new MarkdownPipelineBuilder().UsePipeTables().Build();
+        Result = Markdown.ToHtml(_markdown, mark);
         StateHasChanged();
     }
 
