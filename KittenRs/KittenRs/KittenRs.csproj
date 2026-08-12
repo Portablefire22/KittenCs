@@ -35,7 +35,7 @@
       <Folder Include="Components\Pages\Blogs\" />
       <Folder Include="Components\Pages\Projects\" />
       <Folder Include="Data\Migrations\" />
-      <Folder Include="wwwroot\img\" />
+      <Folder Include="wwwroot\img\kindred\" />
     </ItemGroup>
 
     <ItemGroup>
